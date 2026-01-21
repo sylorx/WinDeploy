@@ -25,7 +25,88 @@ function Write-Log {
     } catch {}
 }
 
-Write-Log "=== WinDeploy v5.0 Basladi ==="
+function Check-WinGet {
+    try {
+        $wingetPath = Get-Command winget -ErrorAction SilentlyContinue
+        if ($wingetPath) {
+            Write-Log "WinGet tespit edildi: $($wingetPath.Source)"
+            return $true
+        }
+        Write-Log "WinGet bulunamadi - Kurulum gerekli"
+        return $false
+    } catch {
+        Write-Log "WinGet kontrol hatasi"
+        return $false
+    }
+}
+
+function Install-WinGet {
+    Write-Log "WinGet kuruluyor..."
+    try {
+        $ProgressPreference = "SilentlyContinue"
+        $appxUrl = "https://github.com/microsoft/winget-cli/releases/download/v1.6.3231/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
+        $tempPath = "$env:TEMP\WinGet.msixbundle"
+        
+        Write-Log "WinGet indiriliyorr: $appxUrl"
+        Invoke-WebRequest -Uri $appxUrl -OutFile $tempPath -ErrorAction SilentlyContinue
+        
+        if (Test-Path $tempPath) {
+            Write-Log "WinGet paketi indirilen - Kurulum baslatiliyor"
+            Add-AppxPackage -Path $tempPath -ForceUpdateFromAnyVersion -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 3
+            Remove-Item $tempPath -Force -ErrorAction SilentlyContinue
+            Write-Log "WinGet kuruldu"
+            return $true
+        } else {
+            Write-Log "WinGet indirme basarisiz"
+            return $false
+        }
+    } catch {
+        Write-Log "WinGet kurulum hatasi: $_"
+        return $false
+    }
+}
+
+function Check-Chocolatey {
+    try {
+        $chocoPath = Get-Command choco -ErrorAction SilentlyContinue
+        if ($chocoPath) {
+            Write-Log "Chocolatey tespit edildi: $($chocoPath.Source)"
+            return $true
+        }
+        Write-Log "Chocolatey bulunamadi - Kurulum gerekli"
+        return $false
+    } catch {
+        Write-Log "Chocolatey kontrol hatasi"
+        return $false
+    }
+}
+
+function Install-Chocolatey {
+    Write-Log "Chocolatey kuruluyor..."
+    try {
+        $ProgressPreference = "SilentlyContinue"
+        $chocoScript = "https://community.chocolatey.org/install.ps1"
+        
+        Write-Log "Chocolatey script indiriliyor: $chocoScript"
+        $script = (New-Object Net.WebClient).DownloadString($chocoScript)
+        
+        if ($script) {
+            Write-Log "Chocolatey kurulum baslatiliyor"
+            Invoke-Expression $script
+            Write-Log "Chocolatey kuruldu"
+            return $true
+        } else {
+            Write-Log "Chocolatey script indirme basarisiz"
+            return $false
+        }
+    } catch {
+        Write-Log "Chocolatey kurulum hatasi: $_"
+        return $false
+    }
+}
+
+Write-Log "=== WinDeploy v5.1 Basladi ==="
 
 $isDarkMode = $true
 $colorDarkBg = [System.Drawing.Color]::FromArgb(30, 30, 30)
@@ -74,7 +155,7 @@ $checkboxes = @{}
 $expandedGroups = @{}
 
 $form = New-Object Windows.Forms.Form
-$form.Text = "WinDeploy v5.0"
+$form.Text = "WinDeploy v5.1"
 $form.Width = 950
 $form.Height = 750
 $form.StartPosition = [Windows.Forms.FormStartPosition]::CenterScreen
@@ -88,7 +169,7 @@ try {
     $panelHeader.BackColor = $colorDarkPanel
 
     $labelTitle = New-Object Windows.Forms.Label
-    $labelTitle.Text = "WinDeploy v5.0"
+    $labelTitle.Text = "WinDeploy v5.1"
     $labelTitle.Font = New-Object System.Drawing.Font("Segoe UI", 20, [System.Drawing.FontStyle]::Bold)
     $labelTitle.ForeColor = $colorPrimary
     $labelTitle.Location = New-Object System.Drawing.Point(15, 12)
@@ -246,6 +327,25 @@ try {
         Write-Log "Paket Yoneticisi: $manager"
         Write-Log "Toplam Uygulama: $($selectedApps.Count)"
 
+        $labelStatus.Text = "Paket yoneticisi kontrol ediliyor..."
+        $form.Refresh()
+
+        if ($manager -eq "WinGet") {
+            if (-not (Check-WinGet)) {
+                Write-Log "WinGet kurulum gerekli"
+                $labelStatus.Text = "WinGet kuruluyor..."
+                $form.Refresh()
+                Install-WinGet
+            }
+        } else {
+            if (-not (Check-Chocolatey)) {
+                Write-Log "Chocolatey kurulum gerekli"
+                $labelStatus.Text = "Chocolatey kuruluyor..."
+                $form.Refresh()
+                Install-Chocolatey
+            }
+        }
+
         $buttonInstall.Enabled = $false
         $progressBar.Value = 0
         $form.Refresh()
@@ -266,22 +366,37 @@ try {
 
             try {
                 if ($manager -eq "WinGet") {
-                    $output = & winget install $paket -e --silent --disable-interactivity 2>&1
                     Write-Log "  Komut: winget install $paket -e --silent --disable-interactivity"
+                    $exitCode = (cmd /c "winget install $paket -e --silent --disable-interactivity" 2>&1; echo $LASTEXITCODE)
+                    $lastCode = $exitCode[-1]
+                    
+                    if ($lastCode -eq "0" -or $lastCode -eq $null) {
+                        Write-Log "  Sonuc: BASARILI (Exit Code: $lastCode)"
+                        $basarili++
+                    } else {
+                        Write-Log "  Sonuc: BASARISIZ (Exit Code: $lastCode)"
+                        $basarisiz++
+                    }
                 } else {
-                    $output = & choco install $paket -y 2>&1
                     Write-Log "  Komut: choco install $paket -y"
+                    $output = & choco install $paket -y 2>&1
+                    
+                    if ($output -match "installed" -or $output -match "up to date") {
+                        Write-Log "  Sonuc: BASARILI"
+                        $basarili++
+                    } else {
+                        Write-Log "  Sonuc: BASARISIZ"
+                        $basarisiz++
+                    }
                 }
-                Write-Log "  Sonuc: BASARILI"
-                $basarili++
             } catch {
-                Write-Log "  Sonuc: BASARISIZ - $_"
+                Write-Log "  HATA: $_"
                 $basarisiz++
             }
 
             $progressBar.Value = [Math]::Min([Math]::Round((($basarili + $basarisiz) / $toplam) * 100), 100)
             $form.Refresh()
-            Start-Sleep -Milliseconds 300
+            Start-Sleep -Milliseconds 500
         }
 
         $labelStatus.Text = "Tamamlandi! $basarili/$toplam basarili"
@@ -324,7 +439,7 @@ try {
             $exportData = @{
                 Uygulamalar = $selectedApps
                 Tarih = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-                Versiyon = "5.0"
+                Versiyon = "5.1"
             }
             $exportData | ConvertTo-Json | Out-File -FilePath $saveDialog.FileName -Encoding UTF8
             Write-Log "Export yapildi: $($saveDialog.FileName)"

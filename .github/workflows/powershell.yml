@@ -1,0 +1,92 @@
+name: PowerShell Lint ve Test
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '*.ps1'
+      - '.github/workflows/powershell.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '*.ps1'
+
+jobs:
+  lint:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: PowerShell Syntax Kontrolü
+      shell: powershell
+      run: |
+        # WinDeploy.ps1 syntax kontrol
+        $script:ScriptErrors = @()
+        
+        try {
+          $null = [System.Management.Automation.PSParser]::Tokenize(
+            (Get-Content -Path "WinDeploy.ps1" -Raw),
+            [ref]$null
+          )
+          Write-Host "✓ WinDeploy.ps1: Syntax OK"
+        }
+        catch {
+          $script:ScriptErrors += "WinDeploy.ps1: $_"
+          Write-Host "✗ WinDeploy.ps1: Syntax Error"
+        }
+        
+        try {
+          $null = [System.Management.Automation.PSParser]::Tokenize(
+            (Get-Content -Path "launcher.ps1" -Raw),
+            [ref]$null
+          )
+          Write-Host "✓ launcher.ps1: Syntax OK"
+        }
+        catch {
+          $script:ScriptErrors += "launcher.ps1: $_"
+          Write-Host "✗ launcher.ps1: Syntax Error"
+        }
+        
+        if ($script:ScriptErrors.Count -gt 0) {
+          Write-Host "`nHatalar:" -ForegroundColor Red
+          $script:ScriptErrors | ForEach-Object { Write-Host "  - $_" }
+          exit 1
+        }
+    
+    - name: PSScriptAnalyzer Kontrolü
+      shell: powershell
+      run: |
+        Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+        
+        Write-Host "WinDeploy.ps1 analizi:" -ForegroundColor Cyan
+        Invoke-ScriptAnalyzer -Path "WinDeploy.ps1" -ReportSummary
+        
+        Write-Host "launcher.ps1 analizi:" -ForegroundColor Cyan
+        Invoke-ScriptAnalyzer -Path "launcher.ps1" -ReportSummary
+      continue-on-error: true
+  
+  security:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Güvenlik Kontrolleri
+      shell: powershell
+      run: |
+        Write-Host "🔍 Güvenlik Kontrolleri Çalıştırılıyor..." -ForegroundColor Cyan
+        
+        # Kritik terimleri ara
+        $kritikTerimler = @("system32", "Format-C:", "Remove-Item * -Recurse", "Get-Credential")
+        
+        foreach ($file in @("WinDeploy.ps1", "launcher.ps1")) {
+          $content = Get-Content $file -Raw
+          foreach ($terim in $kritikTerimler) {
+            if ($content -like "*$terim*") {
+              Write-Host "⚠️ Dikkat: '$terim' bulundu $file içinde"
+            }
+          }
+        }
+        
+        Write-Host "✓ Güvenlik kontrolleri tamamlandı" -ForegroundColor Green

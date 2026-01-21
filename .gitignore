@@ -1,0 +1,67 @@
+# WinDeploy .gitignore dosyası
+
+# Windows
+Thumbs.db
+.DS_Store
+*.lnk
+*.exe
+*.dll
+*.sys
+
+# PowerShell
+*.psm1
+*.psc1
+*.psd1.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Profiller ve İzler
+.PowerShellSession
+profile.ps1.bak
+
+# Geçici Dosyalar
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Log Dosyaları
+*.log
+logs/
+
+# Sistem Dosyaları
+.env
+.env.local
+secrets/
+credentials/
+
+# Node (eğer gelecekte kullanılırsa)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Python (eğer gelecekte kullanılırsa)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+# Derleme Çıktıları
+bin/
+obj/
+dist/
+build/
+
+# Yapılandırma Dosyaları (Lokal)
+config.local.*
+settings.local.*
+
+# WinDeploy Lokal Verileri
+# Kullanıcı tarafından oluşturulan export dosyaları
+apps_export_*.json

@@ -1,0 +1,162 @@
+[
+  {
+    "Id": "vscode",
+    "Name": "Visual Studio Code",
+    "Description": "Kod editörü - Microsoft'un modern IDE'si",
+    "Package": "VisualStudioCode",
+    "Category": "Geliştirme",
+    "Manager": "winget"
+  },
+  {
+    "Id": "7zip",
+    "Name": "7-Zip",
+    "Description": "Sıkıştırma ve arşivleme aracı",
+    "Package": "7zip",
+    "Category": "Araçlar",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "git",
+    "Name": "Git",
+    "Description": "Versiyon kontrol sistemi",
+    "Package": "git",
+    "Category": "Geliştirme",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "python",
+    "Name": "Python",
+    "Description": "Python programlama dili ve runtime",
+    "Package": "python",
+    "Category": "Geliştirme",
+    "Manager": "winget"
+  },
+  {
+    "Id": "nodejs",
+    "Name": "Node.js",
+    "Description": "JavaScript runtime ve npm paket yöneticisi",
+    "Package": "nodejs",
+    "Category": "Geliştirme",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "googlechrome",
+    "Name": "Google Chrome",
+    "Description": "Google'ın modern web tarayıcısı",
+    "Package": "google-chrome",
+    "Category": "Tarayıcı",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "firefox",
+    "Name": "Mozilla Firefox",
+    "Description": "Firefox açık kaynak web tarayıcısı",
+    "Package": "firefox",
+    "Category": "Tarayıcı",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "vlc",
+    "Name": "VLC Media Player",
+    "Description": "Tüm video ve müzik formatlarını oynatacak player",
+    "Package": "vlc",
+    "Category": "Multimedya",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "discord",
+    "Name": "Discord",
+    "Description": "Ses, video ve mesajlaşma platformu",
+    "Package": "discord",
+    "Category": "İletişim",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "telegram",
+    "Name": "Telegram",
+    "Description": "Güvenli mesajlaşma uygulaması",
+    "Package": "telegram",
+    "Category": "İletişim",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "docker",
+    "Name": "Docker Desktop",
+    "Description": "Konteyner platformu",
+    "Package": "docker-desktop",
+    "Category": "Geliştirme",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "dotnet",
+    "Name": ".NET SDK",
+    "Description": "Microsoft .NET geliştirme platformu",
+    "Package": "dotnet-sdk",
+    "Category": "Geliştirme",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "visualstudio",
+    "Name": "Visual Studio Community",
+    "Description": "Microsoft'un tam IDE'si",
+    "Package": "visualstudio2022community",
+    "Category": "Geliştirme",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "notepadplusplus",
+    "Name": "Notepad++",
+    "Description": "Hafif metin editörü",
+    "Package": "notepadplusplus",
+    "Category": "Araçlar",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "ffmpeg",
+    "Name": "FFmpeg",
+    "Description": "Video ve ses işleme aracı",
+    "Package": "ffmpeg",
+    "Category": "Multimedya",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "imagemagick",
+    "Name": "ImageMagick",
+    "Description": "Resim işleme komut satırı aracı",
+    "Package": "imagemagick",
+    "Category": "Araçlar",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "putty",
+    "Name": "PuTTY",
+    "Description": "SSH ve Telnet istemcisi",
+    "Package": "putty",
+    "Category": "Araçlar",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "winscp",
+    "Name": "WinSCP",
+    "Description": "SFTP ve FTP istemcisi",
+    "Package": "winscp",
+    "Category": "Araçlar",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "postman",
+    "Name": "Postman",
+    "Description": "API geliştirme ve test platformu",
+    "Package": "postman",
+    "Category": "Geliştirme",
+    "Manager": "chocolatey"
+  },
+  {
+    "Id": "handbrake",
+    "Name": "HandBrake",
+    "Description": "Video dönüştürme aracı",
+    "Package": "handbrake",
+    "Category": "Multimedya",
+    "Manager": "chocolatey"
+  }
+]

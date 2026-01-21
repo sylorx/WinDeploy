@@ -133,7 +133,7 @@ try {
 
     # === FORM ===
     $form = New-Object Windows.Forms.Form
-    $form.Text = "WinDeploy v5.3"
+    $form.Text = "WinDeploy v5.4"
     $form.Width = 950
     $form.Height = 750
     $form.StartPosition = [Windows.Forms.FormStartPosition]::CenterScreen
@@ -147,7 +147,7 @@ try {
     $panelHeader.BackColor = $colorDarkPanel
 
     $labelTitle = New-Object Windows.Forms.Label
-    $labelTitle.Text = "WinDeploy v5.3"
+    $labelTitle.Text = "WinDeploy v5.4"
     $labelTitle.Font = New-Object System.Drawing.Font("Segoe UI", 20, [System.Drawing.FontStyle]::Bold)
     $labelTitle.ForeColor = $colorPrimary
     $labelTitle.Location = New-Object System.Drawing.Point(15, 12)
@@ -328,22 +328,27 @@ try {
                 Write-Log "UYGULAMA: $appName | Paket: $paket"
 
                 try {
+                    $exitCode = -1
+                    $output = ""
+                    
                     if ($manager -eq "WinGet") {
-                        # Silent + Accept Source Agreement + Accept License
-                        $output = & cmd /c "winget install $paket -e --silent --disable-interactivity --accept-package-agreements --accept-source-agreements 2>&1"
+                        # WinGet kurulumu
+                        Write-Log "  Komut: winget install $paket -e --silent..."
+                        & cmd /c "winget install $paket -e --silent --disable-interactivity --accept-package-agreements --accept-source-agreements" | Out-Null
                         $exitCode = $LASTEXITCODE
                         
                         # WinGet başarısız olursa Chocolatey'ye geç
                         if ($exitCode -ne 0 -and $checkboxes[$appName].Data.Chocolatey) {
-                            Write-Log "  WinGet Basarisiz - Chocolatey Deniyor..."
+                            Write-Log "  WinGet ExitCode: $exitCode - Chocolatey Deniyor..."
                             $chocolateyPaket = $checkboxes[$appName].Data.Chocolatey
-                            $output = & cmd /c "choco install $chocolateyPaket -y --no-progress 2>&1"
+                            & cmd /c "choco install $chocolateyPaket -y --no-progress" | Out-Null
                             $exitCode = $LASTEXITCODE
-                            Write-Log "  Chocolatey kullanildi"
+                            Write-Log "  Chocolatey Komut: choco install $chocolateyPaket -y"
                         }
                     } else {
-                        # Chocolatey silent kurulum
-                        $output = & cmd /c "choco install $paket -y --no-progress 2>&1"
+                        # Chocolatey kurulumu
+                        Write-Log "  Komut: choco install $paket -y --no-progress"
+                        & cmd /c "choco install $paket -y --no-progress" | Out-Null
                         $exitCode = $LASTEXITCODE
                     }
 
@@ -352,13 +357,11 @@ try {
                         $basarili++
                     } else {
                         Write-Log "  SONUC: BASARISIZ (ExitCode: $exitCode)"
-                        Write-Log "  HATA: $output"
                         $basarisiz++
                         $failedApps += $appName
                     }
                 } catch {
-                    Write-Log "  SONUC: BASARISIZ - Exception"
-                    Write-Log "  HATA: $_"
+                    Write-Log "  SONUC: BASARISIZ - Exception: $_"
                     $basarisiz++
                     $failedApps += $appName
                 }

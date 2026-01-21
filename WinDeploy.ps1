@@ -106,7 +106,8 @@ function Install-Chocolatey {
     }
 }
 
-Write-Log "=== WinDeploy v5.1 Basladi ==="
+Write-Log "=== WinDeploy v5.2 Basladi ==="
+Write-Log "Paket Yoneticileri Kontrol Ediliyor..."
 
 $isDarkMode = $true
 $colorDarkBg = [System.Drawing.Color]::FromArgb(30, 30, 30)
@@ -154,8 +155,32 @@ $uygulamalarByKategori = @{
 $checkboxes = @{}
 $expandedGroups = @{}
 
+# === OTOMATIK PAKET YONETICISI KURULUMU (HEMEN) ===
+Write-Log "Kurulum Kontrol Asamasi Baslaniyor..."
+Write-Host ""
+Write-Host "Paket yoneticileri kontrol ediliyor..." -ForegroundColor Yellow
+
+if (-not (Check-WinGet)) {
+    Write-Log "WinGet OTOMATIK kuruluyor..."
+    Write-Host "WinGet kuruluyor... Lutfen bekleyiniz..." -ForegroundColor Yellow
+    Install-WinGet
+    Start-Sleep -Seconds 2
+}
+
+if (-not (Check-Chocolatey)) {
+    Write-Log "Chocolatey OTOMATIK kuruluyor..."
+    Write-Host "Chocolatey kuruluyor... Lutfen bekleyiniz..." -ForegroundColor Yellow
+    Install-Chocolatey
+    Start-Sleep -Seconds 2
+}
+
+Write-Log "Kurulum Kontrol Tamamlandi"
+Write-Host "Hazirlik tamamlandi - GUI aciliyor..." -ForegroundColor Green
+Write-Host ""
+Start-Sleep -Seconds 1
+
 $form = New-Object Windows.Forms.Form
-$form.Text = "WinDeploy v5.1"
+$form.Text = "WinDeploy v5.2"
 $form.Width = 950
 $form.Height = 750
 $form.StartPosition = [Windows.Forms.FormStartPosition]::CenterScreen
@@ -169,7 +194,7 @@ try {
     $panelHeader.BackColor = $colorDarkPanel
 
     $labelTitle = New-Object Windows.Forms.Label
-    $labelTitle.Text = "WinDeploy v5.1"
+    $labelTitle.Text = "WinDeploy v5.2"
     $labelTitle.Font = New-Object System.Drawing.Font("Segoe UI", 20, [System.Drawing.FontStyle]::Bold)
     $labelTitle.ForeColor = $colorPrimary
     $labelTitle.Location = New-Object System.Drawing.Point(15, 12)
@@ -327,25 +352,6 @@ try {
         Write-Log "Paket Yoneticisi: $manager"
         Write-Log "Toplam Uygulama: $($selectedApps.Count)"
 
-        $labelStatus.Text = "Paket yoneticisi kontrol ediliyor..."
-        $form.Refresh()
-
-        if ($manager -eq "WinGet") {
-            if (-not (Check-WinGet)) {
-                Write-Log "WinGet kurulum gerekli"
-                $labelStatus.Text = "WinGet kuruluyor..."
-                $form.Refresh()
-                Install-WinGet
-            }
-        } else {
-            if (-not (Check-Chocolatey)) {
-                Write-Log "Chocolatey kurulum gerekli"
-                $labelStatus.Text = "Chocolatey kuruluyor..."
-                $form.Refresh()
-                Install-Chocolatey
-            }
-        }
-
         $buttonInstall.Enabled = $false
         $progressBar.Value = 0
         $form.Refresh()
@@ -439,7 +445,7 @@ try {
             $exportData = @{
                 Uygulamalar = $selectedApps
                 Tarih = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-                Versiyon = "5.1"
+                Versiyon = "5.2"
             }
             $exportData | ConvertTo-Json | Out-File -FilePath $saveDialog.FileName -Encoding UTF8
             Write-Log "Export yapildi: $($saveDialog.FileName)"

@@ -16,13 +16,16 @@
   - "Evet" butonuna tıklayın
 
 ### ✓ Adım 2: Tek Komut Çalıştırın
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr -Uri 'https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1' -OutFile $env:TEMP\launcher.ps1; & $env:TEMP\launcher.ps1"
-```
 
-**Alternatif (Daha Kısa):**
+**GitHub'dan (Varsayılan):**
 ```powershell
 irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
+```
+
+**Kendi Domain'inden (Önerilir - Daha Hızlı):**
+```powershell
+$env:WINDEPLOY_DOMAIN = "https://yourdomain.com"
+irm "https://yourdomain.com/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
 ```
 
 ### ✓ Adım 3: Menüden Seçim Yapın
@@ -209,7 +212,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "WinDeploy.ps1"
 
 **Başlamak için:**
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr -Uri 'https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1' -OutFile $env:TEMP\launcher.ps1; & $env:TEMP\launcher.ps1"
+# GitHub'dan
+irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
+
+# VEYA Kendi domain'inizden (Daha Hızlı)
+$env:WINDEPLOY_DOMAIN = "https://yourdomain.com"
+irm "https://yourdomain.com/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
 ```
 
 **Daha fazla bilgi:** [README.md](README.md)

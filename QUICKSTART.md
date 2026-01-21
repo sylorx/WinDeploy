@@ -8,13 +8,17 @@
 - "Evet" butonuna tıklayın
 
 ### 2. Tek Komutu Çalıştırın
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr -Uri 'https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1' -OutFile $env:TEMP\launcher.ps1; & $env:TEMP\launcher.ps1"
-```
 
-**VEYA Alternatif (Daha Kısa):**
+**GitHub'dan (Varsayılan):**
 ```powershell
 irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
+```
+
+**Kendi Domain'inden (Daha Hızlı):**
+```powershell
+# Domain'inizi değiştirin: yourdomain.com
+$env:WINDEPLOY_DOMAIN = "https://yourdomain.com"
+irm "https://yourdomain.com/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
 ```
 
 ### 3. Bitti! 🎉

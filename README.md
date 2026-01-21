@@ -36,16 +36,26 @@ WinDeploy, modern Windows bilgisayarlarında uygulamaları kolay bir şekilde y�
 PowerShell'i **Yönetici olarak** açıp bu komutu çalıştırın:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr -Uri 'https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1' -OutFile $env:TEMP\launcher.ps1; & $env:TEMP\launcher.ps1"
-```
-
-**VEYA (Alternatif):**
-
-```powershell
 irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
 ```
 
-> **Not:** GitHub'dan indirmek istiyorsanız repository'yi fork edebilir veya kendi sunucunuzda barındırabilirsiniz.
+#### 🌐 Kendi Domain'inden İndirme (Önerilir)
+
+Eğer kendi domain'iniz varsa (daha hızlı ve güvenilir):
+
+```powershell
+# Environment variable ile domain belirtme
+$env:WINDEPLOY_DOMAIN = "https://yourdomain.com"
+irm "https://yourdomain.com/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
+```
+
+Veya inline:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$env:WINDEPLOY_DOMAIN='https://yourdomain.com'; irm 'https://yourdomain.com/launcher.ps1' -OutFile $env:TEMP\launcher.ps1; & $env:TEMP\launcher.ps1"
+```
+
+> **Not:** GitHub'dan indirmek istiyorsanız repository'yi fork edebilir, kendi sunucunuzda barındırabilirsiniz, veya domain'iniz varsa oraya upload edebilirsiniz. Launcher otomatik olarak domain başarısız olursa GitHub'a fallback yapar.
 
 ### Yöntem 2: Lokal Dosya
 

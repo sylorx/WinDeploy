@@ -1,9 +1,17 @@
 # WinDeploy - One-Line PowerShell Installer
 # Kullanım: Aşağıdaki komutu PowerShell'de (Yönetici) çalıştırın
+# Domain ile: $domain="https://yourdomain.com"; irm "$domain/launcher.ps1" | iex
+
+# Domain ayarı (varsayılan: GitHub)
+$domain = $env:WINDEPLOY_DOMAIN
+if (-not $domain) {
+    $domain = "https://raw.githubusercontent.com/sylorx/WinDeploy/main"
+}
 
 $ErrorActionPreference = "Stop"
 
 Write-Host "🚀 WinDeploy başlatılıyor..." -ForegroundColor Cyan
+Write-Host "📍 Kaynak: $domain" -ForegroundColor Gray
 Write-Host ""
 
 # ExecutionPolicy kontrolü ve ayarlama
@@ -48,11 +56,26 @@ try {
     # TLS 1.2 güvenliği
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
-    $uri = "https://raw.githubusercontent.com/sylorx/WinDeploy/main/WinDeploy.ps1"
+    $uri = "$domain/WinDeploy.ps1"
+    
+    Write-Host "📥 WinDeploy indiriliyor..." -ForegroundColor Yellow
+    Write-Host "   URL: $uri" -ForegroundColor Gray
     
     # Web isteği (proxy uyumlu)
-    $webClient = New-Object System.Net.WebClient
-    $webClient.DownloadFile($uri, $windeployPath)
+    try {
+        $webClient = New-Object System.Net.WebClient
+        $webClient.DownloadFile($uri, $windeployPath)
+    } catch {
+        # Domain başarısız olursa GitHub'a fallback
+        if ($domain -ne "https://raw.githubusercontent.com/sylorx/WinDeploy/main") {
+            Write-Host "⚠️  Domaininden indirme başarısız, GitHub'dan deniyor..." -ForegroundColor Yellow
+            $uri = "https://raw.githubusercontent.com/sylorx/WinDeploy/main/WinDeploy.ps1"
+            $webClient = New-Object System.Net.WebClient
+            $webClient.DownloadFile($uri, $windeployPath)
+        } else {
+            throw $_
+        }
+    }
     
     Write-Host "✅ İndirme tamamlandı" -ForegroundColor Green
     Write-Host ""

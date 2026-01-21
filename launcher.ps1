@@ -1,54 +1,80 @@
-# WinDeploy One-Liner Installer
-# Kullanım: irm "https://example.com/launcher.ps1" | iex
-# Veya lokal: powershell -NoProfile -ExecutionPolicy Bypass -Command "(irm 'https://example.com/launcher.ps1') | iex"
+# WinDeploy - One-Line PowerShell Installer
+# Kullanım: Aşağıdaki komutu PowerShell'de (Yönetici) çalıştırın
 
-Write-Host "WinDeploy Başlatılıyor..." -ForegroundColor Cyan
+$ErrorActionPreference = "Stop"
 
-# Geçici dosya yolu
-$TempDir = $env:TEMP
-$ScriptPath = Join-Path $TempDir "WinDeploy.ps1"
+Write-Host "🚀 WinDeploy başlatılıyor..." -ForegroundColor Cyan
+Write-Host ""
 
-# GitHub veya özel sunucudan indir
-$GitHubRaw = "https://raw.githubusercontent.com/sylorx/WinDeploy/main/WinDeploy.ps1"
-$LocalFallback = "https://windeploy.local/WinDeploy.ps1" # Kendi sunucunuz için
+# ExecutionPolicy kontrolü ve ayarlama
+$currentPolicy = Get-ExecutionPolicy -Scope Process
+if ($currentPolicy -in @("Restricted", "AllSigned")) {
+    Write-Host "⚙️ ExecutionPolicy ayarlanıyor..." -ForegroundColor Yellow
+    Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue
+}
+
+# Yönetici kontrolü
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+if (-not $isAdmin) {
+    Write-Host "📌 Yönetici izni gerekli. PowerShell yeniden başlatılıyor..." -ForegroundColor Yellow
+    Write-Host ""
+    
+    # Yönetici modunda yeniden başlat
+    $scriptFile = $MyInvocation.MyCommand.Path
+    if (-not $scriptFile) {
+        # Eğer pipe ile çalıştırıldıysa, indirdikten sonra çalıştır
+        $scriptFile = Join-Path $env:TEMP "windeploy-launcher-temp.ps1"
+        $MyInvocation.Line | Out-File -FilePath $scriptFile -Encoding UTF8
+    }
+    
+    Start-Process -FilePath "powershell.exe" `
+        -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$scriptFile`"" `
+        -Verb RunAs `
+        -Wait
+    exit
+}
+
+Write-Host "✅ Yönetici modu aktif" -ForegroundColor Green
+Write-Host ""
+
+# WinDeploy script dosya yolu
+$windeployPath = Join-Path $env:TEMP "WinDeploy.ps1"
+
+# GitHub'dan indir
+Write-Host "📥 WinDeploy indiriliyor..." -ForegroundColor Yellow
 
 try {
-    Write-Host "📥 WinDeploy ana script indiriliyor..." -ForegroundColor Yellow
+    # TLS 1.2 güvenliği
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
-    # GitHub'dan indir (TLS 1.2 zorunlu)
-    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    $uri = "https://raw.githubusercontent.com/sylorx/WinDeploy/main/WinDeploy.ps1"
     
-    $ProgressPreference = 'SilentlyContinue'
-    Invoke-WebRequest -Uri $GitHubRaw -OutFile $ScriptPath -UseBasicParsing
+    # Web isteği (proxy uyumlu)
+    $webClient = New-Object System.Net.WebClient
+    $webClient.DownloadFile($uri, $windeployPath)
     
-    if (Test-Path $ScriptPath) {
-        Write-Host "✓ Script indirildi!" -ForegroundColor Green
-        Write-Host "🚀 WinDeploy çalıştırılıyor..." -ForegroundColor Cyan
-        
-        # Yönetici kontrolü
-        $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
-        $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
-        
-        if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-            Write-Host ""
-            Write-Host "⚠️  WinDeploy yönetici izniyle çalışıyor..." -ForegroundColor Yellow
-            
-            # Yönetici izniyle yeniden başlat (ExecutionPolicy Bypass ile)
-            Start-Process -FilePath "powershell.exe" `
-                -ArgumentList "-NoProfile -ExecutionPolicy Bypass -NoExit -Command `"Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force; & '$ScriptPath'`"" `
-                -Verb RunAs `
-                -Wait
-            exit
-        }
-        
-        # Zaten yönetici, direkt çalıştır
-        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue
-        & $ScriptPath
-    } else {
-        throw "Script indirilemedi"
-    }
+    Write-Host "✅ İndirme tamamlandı" -ForegroundColor Green
+    Write-Host ""
+    
+    # WinDeploy'u çalıştır
+    Write-Host "🎯 WinDeploy çalıştırılıyor..." -ForegroundColor Cyan
+    Write-Host ""
+    
+    # ExecutionPolicy bypass ile çalıştır
+    Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue
+    & $windeployPath
+    
 } catch {
-    Write-Host "❌ Hata: $_" -ForegroundColor Red
-    Write-Host "Lütfen bağlantıyı kontrol edin ve yeniden deneyin." -ForegroundColor Yellow
-    Start-Sleep -Seconds 3
+    Write-Host "❌ Hata oluştu:" -ForegroundColor Red
+    Write-Host "   $_" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "💡 Çözüm önerileri:" -ForegroundColor Yellow
+    Write-Host "   1. İnternet bağlantınızı kontrol edin"
+    Write-Host "   2. PowerShell'i yönetici olarak çalıştırdığınızdan emin olun"
+    Write-Host "   3. Windows Defender Firewall ayarlarını kontrol edin"
+    Write-Host ""
+    
+    Write-Host "Devam etmek için Enter tuşuna basın..." -ForegroundColor Gray
+    Read-Host
 }

@@ -9,7 +9,12 @@
 
 ### 2. Tek Komutu Çalıştırın
 ```powershell
-irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" | iex
+powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr -Uri 'https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1' -OutFile $env:TEMP\launcher.ps1; & $env:TEMP\launcher.ps1"
+```
+
+**VEYA Alternatif (Daha Kısa):**
+```powershell
+irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
 ```
 
 ### 3. Bitti! 🎉

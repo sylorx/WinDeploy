@@ -11,6 +11,16 @@
     1.0.0
 #>
 
+# ExecutionPolicy kontrolü
+$executionPolicy = Get-ExecutionPolicy -Scope Process
+if ($executionPolicy -eq 'Restricted' -or $executionPolicy -eq 'AllSigned') {
+    try {
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force -ErrorAction Stop
+    } catch {
+        Write-Host "⚠️ ExecutionPolicy ayarı yapılamadı. Lütfen PowerShell'i yönetici olarak çalıştırın." -ForegroundColor Yellow
+    }
+}
+
 # Yönetici kontrolü
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "⚠️ Bu program yönetici izniyle çalıştırılmalıdır!" -ForegroundColor Red

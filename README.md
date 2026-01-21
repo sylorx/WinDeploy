@@ -31,12 +31,18 @@ WinDeploy, modern Windows bilgisayarlarında uygulamaları kolay bir şekilde y�
 
 ## ⚡ Hızlı Başlangıç
 
-### Yöntem 1: Tek Komutla (Tavsiye Edilen)
+### Yöntem 1: Tek Komutla (Tavsiye Edilen - Düzeltilmiş)
 
 PowerShell'i **Yönetici olarak** açıp bu komutu çalıştırın:
 
 ```powershell
-irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" | iex
+powershell -NoProfile -ExecutionPolicy Bypass -Command "iwr -Uri 'https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1' -OutFile $env:TEMP\launcher.ps1; & $env:TEMP\launcher.ps1"
+```
+
+**VEYA (Alternatif):**
+
+```powershell
+irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" -OutFile $env:TEMP\launcher.ps1; powershell -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\launcher.ps1
 ```
 
 > **Not:** GitHub'dan indirmek istiyorsanız repository'yi fork edebilir veya kendi sunucunuzda barındırabilirsiniz.

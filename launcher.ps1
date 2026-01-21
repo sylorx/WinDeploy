@@ -33,8 +33,12 @@ try {
             Write-Host ""
             Write-Host "⚠️  WinDeploy yönetici izniyle çalışıyor..." -ForegroundColor Yellow
             
-            # Yönetici izniyle yeniden başlat
-            Start-Process -FilePath "powershell" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`"" -Verb RunAs
+            # Yönetici izniyle yeniden başlat (ExecutionPolicy Bypass ile)
+            Start-Process -FilePath "powershell.exe" `
+                -ArgumentList "-NoProfile -ExecutionPolicy Bypass -NoExit -Command `"& {Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force; & '$ScriptPath'}`"" `
+                -Verb RunAs `
+                -Wait
+            exit
         } else {
             # Zaten yönetici, direkt çalıştır
             & $ScriptPath

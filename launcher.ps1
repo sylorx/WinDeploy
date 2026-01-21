@@ -35,14 +35,15 @@ try {
             
             # Yönetici izniyle yeniden başlat (ExecutionPolicy Bypass ile)
             Start-Process -FilePath "powershell.exe" `
-                -ArgumentList "-NoProfile -ExecutionPolicy Bypass -NoExit -Command `"& {Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force; & '$ScriptPath'}`"" `
+                -ArgumentList "-NoProfile -ExecutionPolicy Bypass -NoExit -Command `"Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force; & '$ScriptPath'`"" `
                 -Verb RunAs `
                 -Wait
             exit
-        } else {
-            # Zaten yönetici, direkt çalıştır
-            & $ScriptPath
         }
+        
+        # Zaten yönetici, direkt çalıştır
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force -ErrorAction SilentlyContinue
+        & $ScriptPath
     } else {
         throw "Script indirilemedi"
     }

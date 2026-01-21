@@ -306,44 +306,102 @@ try {
         $progressBar.Value = 0
         $form.Refresh()
 
-        $basarili = 0
-        $basarisiz = 0
-        $toplam = $selectedApps.Count
+        # === ASYNC KURULUM (BACKGROUND WORKER) ===
+        $backgroundWorker = New-Object System.ComponentModel.BackgroundWorker
+        $backgroundWorker.DoWork += {
+            param($sender, $e)
+            
+            $basarili = 0
+            $basarisiz = 0
+            $toplam = $selectedApps.Count
+            $failedApps = @()
 
-        foreach ($appName in $selectedApps) {
-            $appData = $checkboxes[$appName].Data
-            $paket = if ($manager -eq "WinGet") { $appData.WinGet } else { $appData.Chocolatey }
+            foreach ($appName in $selectedApps) {
+                $appData = $checkboxes[$appName].Data
+                $paket = if ($manager -eq "WinGet") { $appData.WinGet } else { $appData.Chocolatey }
 
-            $labelStatus.Text = "Indiriliyor: $appName ($paket)"
-            Write-Log "UYGULAMA: $appName | Paket: $paket"
-            $form.Refresh()
+                $form.Invoke([Action]{
+                    $labelStatus.Text = "Indiriliyor: $appName"
+                    $form.Refresh()
+                })
 
-            try {
-                if ($manager -eq "WinGet") {
-                    cmd /c "winget install $paket -e --silent --disable-interactivity" 2>$null
-                } else {
-                    cmd /c "choco install $paket -y" 2>$null
+                Write-Log "UYGULAMA: $appName | Paket: $paket"
+
+                try {
+                    if ($manager -eq "WinGet") {
+                        # Silent + Accept Source Agreement + Accept License
+                        $output = & cmd /c "winget install $paket -e --silent --disable-interactivity --accept-package-agreements --accept-source-agreements 2>&1"
+                        $exitCode = $LASTEXITCODE
+                        
+                        # WinGet başarısız olursa Chocolatey'ye geç
+                        if ($exitCode -ne 0 -and $checkboxes[$appName].Data.Chocolatey) {
+                            Write-Log "  WinGet Basarisiz - Chocolatey Deniyor..."
+                            $chocolateyPaket = $checkboxes[$appName].Data.Chocolatey
+                            $output = & cmd /c "choco install $chocolateyPaket -y --no-progress 2>&1"
+                            $exitCode = $LASTEXITCODE
+                            Write-Log "  Chocolatey kullanildi"
+                        }
+                    } else {
+                        # Chocolatey silent kurulum
+                        $output = & cmd /c "choco install $paket -y --no-progress 2>&1"
+                        $exitCode = $LASTEXITCODE
+                    }
+
+                    if ($exitCode -eq 0) {
+                        Write-Log "  SONUC: BASARILI (ExitCode: $exitCode)"
+                        $basarili++
+                    } else {
+                        Write-Log "  SONUC: BASARISIZ (ExitCode: $exitCode)"
+                        Write-Log "  HATA: $output"
+                        $basarisiz++
+                        $failedApps += $appName
+                    }
+                } catch {
+                    Write-Log "  SONUC: BASARISIZ - Exception"
+                    Write-Log "  HATA: $_"
+                    $basarisiz++
+                    $failedApps += $appName
                 }
-                Write-Log "  SONUC: BASARILI"
-                $basarili++
-            } catch {
-                Write-Log "  SONUC: BASARISIZ"
-                $basarisiz++
+
+                $progress = [Math]::Min([Math]::Round((($basarili + $basarisiz) / $toplam) * 100), 100)
+                $form.Invoke([Action]{
+                    $progressBar.Value = $progress
+                    $form.Refresh()
+                })
+
+                Start-Sleep -Milliseconds 500
             }
 
-            $progressBar.Value = [Math]::Min([Math]::Round((($basarili + $basarisiz) / $toplam) * 100), 100)
-            $form.Refresh()
-            Start-Sleep -Milliseconds 300
+            $e.Result = @{
+                Basarili = $basarili
+                Basarisiz = $basarisiz
+                Basarisizlar = $failedApps
+            }
         }
 
-        $labelStatus.Text = "Tamamlandi! $basarili/$toplam"
-        $progressBar.Value = 100
-        $buttonInstall.Enabled = $true
+        $backgroundWorker.RunWorkerCompleted += {
+            param($sender, $e)
+            
+            $result = $e.Result
+            $labelStatus.Text = "Tamamlandi! $($result.Basarili)/$($selectedApps.Count)"
+            $progressBar.Value = 100
+            $buttonInstall.Enabled = $true
 
-        Write-Log "=== YUKLEME TAMAMLANDI ==="
-        Write-Log "Basarili: $basarili | Basarisiz: $basarisiz"
+            Write-Log "=== YUKLEME TAMAMLANDI ==="
+            Write-Log "Basarili: $($result.Basarili) | Basarisiz: $($result.Basarisiz)"
 
-        [Windows.Forms.MessageBox]::Show("Tamamlandi!`n`nBasarili: $basarili`nBasarisiz: $basarisiz", "OK", [Windows.Forms.MessageBoxButtons]::OK, [Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+            $msg = "Tamamlandi!`n`nBasarili: $($result.Basarili)`nBasarisiz: $($result.Basarisiz)"
+            
+            if ($result.Basarisiz -gt 0) {
+                $msg += "`n`nBasarısız olanlar:`n"
+                $msg += ($result.Basarisizlar | ForEach-Object { "  • $_" }) -join "`n"
+                $msg += "`n`n(Chocolatey'ye gecmeyi deneyin veya paketi manuel kurun)"
+            }
+
+            [Windows.Forms.MessageBox]::Show($msg, "Yukleme Tamamlandi", [Windows.Forms.MessageBoxButtons]::OK, [Windows.Forms.MessageBoxIcon]::Information) | Out-Null
+        }
+
+        $backgroundWorker.RunWorkerAsync()
     })
 
     $panelFooter.Controls.Add($buttonInstall)

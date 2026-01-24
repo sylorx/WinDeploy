@@ -2,28 +2,23 @@
   "public": "public",
   "buildCommand": "echo 'Static deployment'",
   "outputDirectory": "public",
-  "cleanUrls": false,
-  "rewrites": [
-    { "source": "/website/(.*)", "destination": "/website/$1" }
-  ],
+  "cleanUrls": true,
   "headers": [
     {
-      "source": "/(.*)\\.ps1",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/plain; charset=utf-8"
-        }
-      ]
+      "source": "/launcher.ps1",
+      "headers": [{"key": "Content-Type", "value": "text/plain; charset=utf-8"}]
     },
     {
-      "source": "/website/(.*)\\.html",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/html; charset=utf-8"
-        }
-      ]
+      "source": "/WinDeploy.ps1",
+      "headers": [{"key": "Content-Type", "value": "text/plain; charset=utf-8"}]
+    },
+    {
+      "source": "/(.*)\\.html",
+      "headers": [{"key": "Content-Type", "value": "text/html; charset=utf-8"}]
+    },
+    {
+      "source": "/(.*)\\.css",
+      "headers": [{"key": "Content-Type", "value": "text/css; charset=utf-8"}]
     }
   ]
 }

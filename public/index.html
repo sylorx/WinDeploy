@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WinDeploy — Windows Uygulama Yöneticisi</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <h1 class="logo">WinDeploy</h1>
+      <ul class="nav-links">
+        <li><a href="#download">İndir</a></li>
+        <li><a href="#features">Özellikler</a></li>
+        <li><a href="#docs">Dokümantasyon</a></li>
+        <li><a href="https://github.com/sylorx/WinDeploy" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h2>Windows için Basit Uygulama Yükleyici</h2>
+      <p>WinGet ve Chocolatey ile bir tıkla 50+ uygulamayı yükleyin</p>
+      <button class="cta-button" onclick="copyCommand()">Komutu Kopyala</button>
+      <pre class="command" id="command">irm "https://windeploy.vercel.app/launcher.ps1" | iex</pre>
+    </div>
+  </header>
+
+  <section id="features" class="features">
+    <div class="container">
+      <h3>Neden WinDeploy?</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h4>⚡ Hızlı</h4>
+          <p>Arka planda sessiz kurulum. UI donmaz, işleminiz kesintisiz.</p>
+        </div>
+        <div class="feature-card">
+          <h4>📦 Çok Seçenek</h4>
+          <p>50+ uygulamadan seçin. Kategorilere ayrılmış, kolay erişim.</p>
+        </div>
+        <div class="feature-card">
+          <h4>🔄 Esnek</h4>
+          <p>WinGet ya da Chocolatey seçin. Otomatik fallback desteği.</p>
+        </div>
+        <div class="feature-card">
+          <h4>📋 İçe/Dışa Aktarma</h4>
+          <p>Seçimlerinizi JSON ile kaydedin ve başka bilgisayara taşıyın.</p>
+        </div>
+        <div class="feature-card">
+          <h4>🗂️ Kategorilendirme</h4>
+          <p>Tarayıcı, Multimedia, Geliştirme, Sistem, İletişim, Office...</p>
+        </div>
+        <div class="feature-card">
+          <h4>📊 Detaylı Günlük</h4>
+          <p>Tüm işlemlerin kaydı tutulur. Ne kuruldu, ne başarısız oldu?</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="download" class="download">
+    <div class="container">
+      <h3>Başlangıç</h3>
+      <ol class="steps">
+        <li>
+          <strong>PowerShell'i Yönetici olarak açın</strong>
+          <p>Windows menüsünde "PowerShell" ara, sağ tık → Yönetici olarak aç</p>
+        </li>
+        <li>
+          <strong>Komutu çalıştırın</strong>
+          <pre><code>irm "https://windeploy.vercel.app/launcher.ps1" | iex</code></pre>
+        </li>
+        <li>
+          <strong>Uygulamaları seçin</strong>
+          <p>GUI açılacak. İstediğiniz uygulamaları seçip "Indir ve Yukle" düğmesine tıklayın.</p>
+        </li>
+        <li>
+          <strong>Bekleyin</strong>
+          <p>Kurulum arka planda yapılır. Progress bar izleyin.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="docs" class="docs">
+    <div class="container">
+      <h3>Teknik Bilgiler</h3>
+      <div class="docs-grid">
+        <div>
+          <h4>Paket Yöneticileri</h4>
+          <p><strong>WinGet:</strong> Microsoft'un resmi paket yöneticisi (Windows 11+, yüklenebilir)</p>
+          <p><strong>Chocolatey:</strong> Topluluk tarafından yönetilen paket yöneticisi (geniş paket havuzu)</p>
+        </div>
+        <div>
+          <h4>Desteklenen Uygulamalar</h4>
+          <ul>
+            <li>Tarayıcılar (Chrome, Firefox, Brave, Edge, Vivaldi...)</li>
+            <li>Multimedia (Spotify, VLC, OBS, Audacity, GIMP...)</li>
+            <li>Geliştirme (VSCode, Git, Python, Node.js, Docker...)</li>
+            <li>Sistem Araçları (PowerToys, 7-Zip, Notepad++, VirtualBox...)</li>
+            <li>İletişim (Discord, Slack, Zoom, Teams...)</li>
+            <li>Office (LibreOffice, OnlyOffice...)</li>
+            <li>Güvenlik (Malwarebytes, Bitwarden, KeePass...)</li>
+            <li>Oyunlar (Steam, Epic Games, GOG...)</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Günlük Dosyası</h4>
+          <p>Konumu: <code>%APPDATA%\WinDeploy\WinDeploy_YYYY-MM-DD.log</code></p>
+          <p>Her kurulum denemesinin kaydı tutulur. Exit code'lar, hatalar, başarılar görülebilir.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 WinDeploy — <a href="https://github.com/sylorx/WinDeploy">GitHub</a> | <a href="https://github.com/sylorx/WinDeploy/issues">İssue Bildir</a></p>
+    </div>
+  </footer>
+
+  <script>
+    function copyCommand() {
+      const cmd = 'irm "https://windeploy.vercel.app/launcher.ps1" | iex';
+      navigator.clipboard.writeText(cmd).then(() => {
+        alert('Komut kopyalandı!');
+      }).catch(() => {
+        alert('Kopyalama başarısız. Manuel olarak kopyalayın.');
+      });
+    }
+  </script>
+</body>
+</html>

@@ -92,20 +92,26 @@ try {
     $colorSuccess = [System.Drawing.Color]::FromArgb(0, 200, 83)
     $colorDanger = [System.Drawing.Color]::FromArgb(220, 53, 69)
 
-    # === UYGULAMALAR ===
+    # === UYGULAMALAR (Genişletildi) ===
     $uygulamalarByKategori = @{
         "Tarayicilar" = @(
             @{Ad = "Google Chrome"; WinGet = "Google.Chrome"; Chocolatey = "googlechrome"}
             @{Ad = "Firefox"; WinGet = "Mozilla.Firefox"; Chocolatey = "firefox"}
             @{Ad = "Brave"; WinGet = "BraveSoftware.BraveBrowser"; Chocolatey = "brave"}
             @{Ad = "Opera"; WinGet = "Opera.Opera"; Chocolatey = "opera"}
-            @{Ad = "Edge"; WinGet = "Microsoft.Edge"; Chocolatey = "microsoft-edge"}
+            @{Ad = "Microsoft Edge"; WinGet = "Microsoft.Edge"; Chocolatey = "microsoft-edge"}
+            @{Ad = "Vivaldi"; WinGet = "Vivaldi.Vivaldi"; Chocolatey = "vivaldi"}
+            @{Ad = "Tor Browser"; WinGet = "TorProject.TorBrowser"; Chocolatey = "tor-browser"}
+            @{Ad = "Chromium"; WinGet = "Chromium.Chromium"; Chocolatey = "chromium"}
         )
         "Multimedia" = @(
             @{Ad = "Spotify"; WinGet = "Spotify.Spotify"; Chocolatey = "spotify"}
             @{Ad = "VLC"; WinGet = "VideoLAN.VLC"; Chocolatey = "vlc"}
             @{Ad = "OBS Studio"; WinGet = "OBSProject.OBSStudio"; Chocolatey = "obs-studio"}
             @{Ad = "Audacity"; WinGet = "Audacity.Audacity"; Chocolatey = "audacity"}
+            @{Ad = "GIMP"; WinGet = "GIMP.GIMP"; Chocolatey = "gimp"}
+            @{Ad = "HandBrake"; WinGet = "HandBrake.HandBrake"; Chocolatey = "handbrake"}
+            @{Ad = "foobar2000"; WinGet = "foobar2000.foobar2000"; Chocolatey = "foobar2000"}
         )
         "Gelistirme" = @(
             @{Ad = "Visual Studio Code"; WinGet = "Microsoft.VisualStudioCode"; Chocolatey = "vscode"}
@@ -114,16 +120,39 @@ try {
             @{Ad = "Node.js"; WinGet = "OpenJS.NodeJS"; Chocolatey = "nodejs"}
             @{Ad = "Docker"; WinGet = "Docker.DockerDesktop"; Chocolatey = "docker-desktop"}
             @{Ad = "Postman"; WinGet = "Postman.Postman"; Chocolatey = "postman"}
+            @{Ad = "JetBrains Toolbox"; WinGet = "JetBrains.Toolbox"; Chocolatey = "jetbrains-toolbox"}
+            @{Ad = "Sublime Text"; WinGet = "SublimeHQ.SublimeText"; Chocolatey = "sublimetext3"}
+            @{Ad = "IntelliJ IDEA (Community)"; WinGet = "JetBrains.IntelliJIDEA.Community"; Chocolatey = "intellijidea-community"}
+            @{Ad = "Visual Studio (Community)"; WinGet = "Microsoft.VisualStudio.2022.Community"; Chocolatey = "visualstudio2022community"}
         )
         "Sistem" = @(
             @{Ad = "PowerToys"; WinGet = "Microsoft.PowerToys"; Chocolatey = "powertoys"}
             @{Ad = "7-Zip"; WinGet = "7zip.7zip"; Chocolatey = "7zip"}
             @{Ad = "Notepad++"; WinGet = "Notepad++.Notepad++"; Chocolatey = "notepadplusplus"}
             @{Ad = "VirtualBox"; WinGet = "Oracle.VirtualBox"; Chocolatey = "virtualbox"}
+            @{Ad = "Sysinternals"; WinGet = "Microsoft.Sysinternals"; Chocolatey = "sysinternals"}
+            @{Ad = "CPU-Z"; WinGet = "cpuz.cpuz"; Chocolatey = "cpu-z"}
+            @{Ad = "Updraft"; WinGet = ""; Chocolatey = ""}
+        )
+        "Iletisim" = @(
+            @{Ad = "Discord"; WinGet = "Discord.Discord"; Chocolatey = "discord"}
+            @{Ad = "Slack"; WinGet = "SlackTechnologies.Slack"; Chocolatey = "slack"}
+            @{Ad = "Zoom"; WinGet = "Zoom.Zoom"; Chocolatey = "zoom"}
+            @{Ad = "Microsoft Teams"; WinGet = "Microsoft.Teams"; Chocolatey = "microsoft-teams"}
+        )
+        "Office" = @(
+            @{Ad = "LibreOffice"; WinGet = "TheDocumentFoundation.LibreOffice"; Chocolatey = "libreoffice-fresh"}
+            @{Ad = "OnlyOffice"; WinGet = "Ascensio.Systems.OnlyOffice"; Chocolatey = "onlyoffice"}
+        )
+        "Guvenlik" = @(
+            @{Ad = "Malwarebytes"; WinGet = "Malwarebytes.Malwarebytes"; Chocolatey = "malwarebytes"}
+            @{Ad = "Bitwarden"; WinGet = "Bitwarden.Bitwarden"; Chocolatey = "bitwarden"}
+            @{Ad = "KeePass"; WinGet = "DominikReichl.KeePassXC"; Chocolatey = "keepassxc"}
         )
         "Oyun" = @(
             @{Ad = "Steam"; WinGet = "Valve.Steam"; Chocolatey = "steam"}
             @{Ad = "Epic Games"; WinGet = "EpicGames.EpicGamesLauncher"; Chocolatey = "epicgameslauncher"}
+            @{Ad = "GOG Galaxy"; WinGet = "GOG.Galaxy"; Chocolatey = "goggalaxy"}
         )
     }
 
@@ -133,7 +162,7 @@ try {
 
     # === FORM ===
     $form = New-Object Windows.Forms.Form
-    $form.Text = "WinDeploy v5.4"
+    $form.Text = "WinDeploy v5.5"
     $form.Width = 950
     $form.Height = 750
     $form.StartPosition = [Windows.Forms.FormStartPosition]::CenterScreen
@@ -147,7 +176,7 @@ try {
     $panelHeader.BackColor = $colorDarkPanel
 
     $labelTitle = New-Object Windows.Forms.Label
-    $labelTitle.Text = "WinDeploy v5.4"
+    $labelTitle.Text = "WinDeploy v5.5"
     $labelTitle.Font = New-Object System.Drawing.Font("Segoe UI", 20, [System.Drawing.FontStyle]::Bold)
     $labelTitle.ForeColor = $colorPrimary
     $labelTitle.Location = New-Object System.Drawing.Point(15, 12)

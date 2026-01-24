@@ -158,6 +158,7 @@ try {
 
     $checkboxes = @{}
     $expandedGroups = @{}
+    $categoryContainers = @{}
     $selectedManager = "WinGet"
 
     # === FORM ===
@@ -214,6 +215,8 @@ try {
 
     $y = 10
     foreach ($kategori in $uygulamalarByKategori.Keys) {
+        $apps = $uygulamalarByKategori[$kategori]
+
         $panelKategori = New-Object Windows.Forms.Panel
         $panelKategori.Width = 900
         $panelKategori.Height = 35
@@ -234,38 +237,55 @@ try {
 
         $expandedGroups[$kategori] = $true
 
-        $buttonKategori.Add_Click({
-            $kat = $this.Tag
-            $expandedGroups[$kat] = -not $expandedGroups[$kat]
-            $this.Text = if ($expandedGroups[$kat]) { "[-] $kat" } else { "[+] $kat" }
-        })
-
         $panelKategori.Controls.Add($buttonKategori)
         $scrollPanel.Controls.Add($panelKategori)
         $y += 40
 
-        if ($expandedGroups[$kategori]) {
-            foreach ($app in $uygulamalarByKategori[$kategori]) {
-                $checkbox = New-Object Windows.Forms.CheckBox
-                $checkbox.Text = $app.Ad
-                $checkbox.Width = 900
-                $checkbox.Height = 28
-                $checkbox.Location = New-Object System.Drawing.Point(30, $y)
-                $checkbox.BackColor = $colorDarkBg
-                $checkbox.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 180)
-                $checkbox.Font = New-Object System.Drawing.Font("Segoe UI", 10)
-                $checkbox.Cursor = [Windows.Forms.Cursors]::Hand
+        # create container panel for apps in this category so we can toggle visibility
+        $container = New-Object Windows.Forms.Panel
+        $container.Width = 900
+        $container.Location = New-Object System.Drawing.Point(10, $y)
+        $container.BackColor = $colorDarkBg
 
-                $checkbox.Add_CheckedChanged({
-                    $count = @($checkboxes.Values | Where-Object { $_.Checked }).Count
-                    $labelCount.Text = "Secili: $count uygulama"
-                })
+        $countApps = $apps.Count
+        $containerHeight = [Math]::Max( ($countApps * 32), 0 )
+        $container.Height = $containerHeight
+        $container.AutoScroll = $false
 
-                $scrollPanel.Controls.Add($checkbox)
-                $checkboxes[$app.Ad] = @{Checkbox = $checkbox; Data = $app}
-                $y += 32
-            }
+        $categoryContainers[$kategori] = $container
+
+        $i = 0
+        foreach ($app in $apps) {
+            $checkbox = New-Object Windows.Forms.CheckBox
+            $checkbox.Text = $app.Ad
+            $checkbox.Width = 880
+            $checkbox.Height = 28
+            $checkbox.Location = New-Object System.Drawing.Point(20, (4 + ($i * 32)))
+            $checkbox.BackColor = $colorDarkBg
+            $checkbox.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 180)
+            $checkbox.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+            $checkbox.Cursor = [Windows.Forms.Cursors]::Hand
+
+            $checkbox.Add_CheckedChanged({
+                $count = @($checkboxes.Values | Where-Object { $_.Checkbox.Checked }).Count
+                $labelCount.Text = "Secili: $count uygulama"
+            })
+
+            $container.Controls.Add($checkbox)
+            $checkboxes[$app.Ad] = @{Checkbox = $checkbox; Data = $app}
+            $i++
         }
+
+        $scrollPanel.Controls.Add($container)
+        $y += $containerHeight + 8
+
+        # toggle handler uses sender so closure binding is safe
+        $buttonKategori.Add_Click({ param($s,$e)
+            $kat = $s.Tag
+            $expandedGroups[$kat] = -not $expandedGroups[$kat]
+            $categoryContainers[$kat].Visible = $expandedGroups[$kat]
+            $s.Text = if ($expandedGroups[$kat]) { "[-] $kat" } else { "[+] $kat" }
+        })
     }
 
     $form.Controls.Add($scrollPanel)

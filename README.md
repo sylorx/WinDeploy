@@ -31,23 +31,13 @@ WinDeploy, modern Windows bilgisayarlarında uygulamaları kolay bir şekilde y�
 
 ## ⚡ Hızlı Başlangıç
 
-### Yöntem 1: Tek Komutla (Tavsiye Edilen - Düzeltilmiş)
+### Yöntem 1: Tek Komutla (Tavsiye Edilen)
 
 PowerShell'i **Yönetici olarak** açıp bu komutu çalıştırın:
 
 ```powershell
-irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/launcher.ps1" | iex
+irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/scripts/launcher.ps1" | iex
 ```
-
-> **Not:** GitHub cache'i yüksek olabilir, alternatif olarak Vercel'den kullan:
-
-```powershell
-irm "https://windeploy.vercel.app/launcher.ps1" | iex
-```
-
-#### 🌐 Kendi Domain'inden İndirme (Opsiyonel)
-
-Kendi domain'iniz varsa daha hızlı ve güvenilir bir şekilde kullanabilirsiniz:
 
 ```powershell
 $env:WINDEPLOY_DOMAIN = "https://yourdomain.com"
@@ -100,6 +90,28 @@ Uygulama listelerinizi:
   - ⚙️ Başlangıç Programları Yönetimi
   - 🌐 Network Ayarları
   - 🔥 Firewall Yönetimi
+
+### 📊 Perforans Monitörü
+- Real-time RAM kullanımı
+- Disk kullanım yüzdesi
+- Görsel progress barlar
+
+### 🌐 Network Bilgisi
+- Ağ adaptörü bilgisi
+- IP adresi
+- Gateway bilgileri
+- Bağlantı durumu
+
+### ❤️ Sistem Sağlığı
+- Windows Update durumu
+- Disk kullanım uyarıları
+- RAM kullanım analizi
+- Temp dosya temizlik önerileri
+
+### 🔍 Uygulama Arama
+- Header'da arama kutusu
+- Gerçek zamanlı filtreleme
+- 120+ uygulamalardan hızlı arama
 
 ---
 

@@ -10,7 +10,7 @@ Write-Host ""
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
     Write-Host "Yonetici izni gerekli..." -ForegroundColor Yellow
-    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command irm 'https://windeploy.vercel.app/launcher.ps1' | iex"
+    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command irm 'https://raw.githubusercontent.com/sylorx/WinDeploy/main/scripts/launcher.ps1' | iex"
     exit
 }
 
@@ -21,7 +21,7 @@ try {
     Write-Host "Indiriliyor..." -ForegroundColor Cyan
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     
-    $script = irm "https://windeploy.vercel.app/WinDeploy.ps1" -ErrorAction Stop
+    $script = irm "https://raw.githubusercontent.com/sylorx/WinDeploy/main/scripts/WinDeploy.ps1" -ErrorAction Stop
     Write-Host "Indir tamamlandi" -ForegroundColor Green
     Write-Host ""
     

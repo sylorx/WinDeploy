@@ -486,7 +486,7 @@ try {
         $labelInfo.Text = "$($info.Icon) $($info.Label): $($info.Value)"
         $labelInfo.Font = New-Object System.Drawing.Font("Segoe UI", 10)
         $labelInfo.ForeColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
-        $labelInfo.Location = New-Object System.Drawing.Point(15, $y)
+        $labelInfo.Location = New-Object System.Drawing.Point 15, $y
         $labelInfo.Width = $labelWidth
         $labelInfo.Height = $labelHeight
         $scrollSistem.Controls.Add($labelInfo)
@@ -520,12 +520,13 @@ try {
     foreach ($tool in $tools) {
         $x = if ($col -eq 0) { 15 } else { 480 }
         $row = [Math]::Floor($tools.IndexOf($tool) / 2)
+        $pointY = $y + ($row * 55)
 
         $buttonTool = New-Object Windows.Forms.Button
         $buttonTool.Text = $tool.Text
         $buttonTool.Width = 430
         $buttonTool.Height = 45
-        $buttonTool.Location = New-Object System.Drawing.Point($x, $y + ($row * 55))
+        $buttonTool.Location = New-Object System.Drawing.Point $x, $pointY
         $buttonTool.BackColor = $tool.Color
         $buttonTool.ForeColor = [System.Drawing.Color]::White
         $buttonTool.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)

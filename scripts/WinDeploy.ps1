@@ -299,11 +299,46 @@ try {
         }
     }
 
+    # === PERFORANS BILGILERI FONKSIYONU ===
+    function Get-PerformanceInfo {
+        $os = Get-CimInstance Win32_OperatingSystem
+        $totalMem = $os.TotalVisibleMemorySize
+        $freeMem = $os.FreePhysicalMemory
+        $usedMem = $totalMem - $freeMem
+        $memPercent = [Math]::Round(($usedMem / $totalMem) * 100, 1)
+        
+        $disk = Get-Volume | Where-Object {$_.DriveLetter -eq 'C'}
+        $diskPercent = if ($disk.Size -gt 0) { [Math]::Round((($disk.Size - $disk.SizeRemaining) / $disk.Size) * 100, 1) } else { 0 }
+        
+        return @{
+            MemoryUsedPercent = $memPercent
+            MemoryUsedGB = [Math]::Round($usedMem / 1024 / 1024, 2)
+            MemoryTotalGB = [Math]::Round($totalMem / 1024 / 1024, 2)
+            DiskUsedPercent = $diskPercent
+        }
+    }
+
+    # === NETWORK BILGILERI FONKSIYONU ===
+    function Get-NetworkInfo {
+        $adapters = Get-NetAdapter | Where-Object {$_.Status -eq 'Up'}
+        $ipConfig = Get-NetIPAddress | Where-Object {$_.AddressFamily -eq 'IPv4' -and $_.InterfaceAlias -notlike '*Loopback*'}
+        
+        $primaryAdapter = $adapters | Select-Object -First 1
+        $primaryIP = $ipConfig | Select-Object -First 1
+        
+        return @{
+            Adapter = if ($primaryAdapter) { $primaryAdapter.Name } else { "Yok" }
+            Status = if ($primaryAdapter) { "Bagli" } else { "Bagli Degil" }
+            IP = if ($primaryIP) { $primaryIP.IPAddress } else { "Bilinmiyor" }
+            Gateway = (Get-NetRoute | Where-Object {$_.DestinationPrefix -eq '0.0.0.0/0'} | Select-Object -First 1).NextHop
+        }
+    }
+
     # === FORM ===
     $form = New-Object Windows.Forms.Form
-    $form.Text = "WinDeploy v6.0"
-    $form.Width = 1000
-    $form.Height = 800
+    $form.Text = "WinDeploy v6.1"
+    $form.Width = 1100
+    $form.Height = 850
     $form.StartPosition = [Windows.Forms.FormStartPosition]::CenterScreen
     $form.BackColor = $colorDarkBg
     $form.Font = New-Object System.Drawing.Font("Segoe UI", 10)
@@ -315,7 +350,7 @@ try {
     $panelHeader.BackColor = $colorDarkPanel
 
     $labelTitle = New-Object Windows.Forms.Label
-    $labelTitle.Text = "WinDeploy v6.0"
+    $labelTitle.Text = "WinDeploy v6.1"
     $labelTitle.Font = New-Object System.Drawing.Font("Segoe UI", 20, [System.Drawing.FontStyle]::Bold)
     $labelTitle.ForeColor = $colorPrimary
     $labelTitle.Location = New-Object System.Drawing.Point(15, 12)
@@ -547,6 +582,165 @@ try {
 
     $tabSistem.Controls.Add($scrollSistem)
     $tabControl.TabPages.Add($tabSistem)
+
+    # --- TAB 3: PERFORANS ---
+    $tabPerformans = New-Object Windows.Forms.TabPage
+    $tabPerformans.Text = "Performans"
+    $tabPerformans.BackColor = $colorDarkBg
+
+    $scrollPerformans = New-Object Windows.Forms.Panel
+    $scrollPerformans.Dock = [Windows.Forms.DockStyle]::Fill
+    $scrollPerformans.AutoScroll = $true
+    $scrollPerformans.BackColor = $colorDarkBg
+    $scrollPerformans.Padding = New-Object Windows.Forms.Padding(15)
+
+    $perfInfo = Get-PerformanceInfo
+
+    $labelPerfBaslik = New-Object Windows.Forms.Label
+    $labelPerfBaslik.Text = "Sistem Performansi"
+    $labelPerfBaslik.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+    $labelPerfBaslik.ForeColor = $colorPrimary
+    $labelPerfBaslik.Location = New-Object System.Drawing.Point 15, 15
+    $labelPerfBaslik.AutoSize = $true
+    $scrollPerformans.Controls.Add($labelPerfBaslik)
+
+    $y = 50
+    
+    # Memory durumu
+    $labelMemory = New-Object Windows.Forms.Label
+    $labelMemory.Text = "RAM Kullanımı: $($perfInfo.MemoryUsedGB) GB / $($perfInfo.MemoryTotalGB) GB (%$($perfInfo.MemoryUsedPercent))"
+    $labelMemory.Font = New-Object System.Drawing.Font("Segoe UI", 11)
+    $labelMemory.ForeColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
+    $labelMemory.Location = New-Object System.Drawing.Point 15, $y
+    $labelMemory.AutoSize = $true
+    $scrollPerformans.Controls.Add($labelMemory)
+
+    # Memory progress bar
+    $progressMemory = New-Object Windows.Forms.ProgressBar
+    $progressMemory.Location = New-Object System.Drawing.Point 15, ($y + 30)
+    $progressMemory.Width = 500
+    $progressMemory.Height = 25
+    $progressMemory.Value = [int]$perfInfo.MemoryUsedPercent
+    $progressMemory.ForeColor = $colorSuccess
+    $scrollPerformans.Controls.Add($progressMemory)
+
+    $y += 70
+
+    # Disk durumu
+    $labelDisk = New-Object Windows.Forms.Label
+    $labelDisk.Text = "Disk Kullanımı (C:): %$($perfInfo.DiskUsedPercent)"
+    $labelDisk.Font = New-Object System.Drawing.Font("Segoe UI", 11)
+    $labelDisk.ForeColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
+    $labelDisk.Location = New-Object System.Drawing.Point 15, $y
+    $labelDisk.AutoSize = $true
+    $scrollPerformans.Controls.Add($labelDisk)
+
+    # Disk progress bar
+    $progressDisk = New-Object Windows.Forms.ProgressBar
+    $progressDisk.Location = New-Object System.Drawing.Point 15, ($y + 30)
+    $progressDisk.Width = 500
+    $progressDisk.Height = 25
+    $progressDisk.Value = [int]$perfInfo.DiskUsedPercent
+    $scrollPerformans.Controls.Add($progressDisk)
+
+    $tabPerformans.Controls.Add($scrollPerformans)
+    $tabControl.TabPages.Add($tabPerformans)
+
+    # --- TAB 4: NETWORK ---
+    $tabNetwork = New-Object Windows.Forms.TabPage
+    $tabNetwork.Text = "Network"
+    $tabNetwork.BackColor = $colorDarkBg
+
+    $scrollNetwork = New-Object Windows.Forms.Panel
+    $scrollNetwork.Dock = [Windows.Forms.DockStyle]::Fill
+    $scrollNetwork.AutoScroll = $true
+    $scrollNetwork.BackColor = $colorDarkBg
+    $scrollNetwork.Padding = New-Object Windows.Forms.Padding(15)
+
+    $netInfo = Get-NetworkInfo
+
+    $labelNetBaslik = New-Object Windows.Forms.Label
+    $labelNetBaslik.Text = "Network Bilgisi"
+    $labelNetBaslik.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+    $labelNetBaslik.ForeColor = $colorPrimary
+    $labelNetBaslik.Location = New-Object System.Drawing.Point 15, 15
+    $labelNetBaslik.AutoSize = $true
+    $scrollNetwork.Controls.Add($labelNetBaslik)
+
+    $y = 50
+    $netInfos = @(
+        "Adapter: $($netInfo.Adapter)"
+        "Status: $($netInfo.Status)"
+        "IP Adresi: $($netInfo.IP)"
+        "Gateway: $($netInfo.Gateway)"
+    )
+
+    foreach ($netLine in $netInfos) {
+        $labelNet = New-Object Windows.Forms.Label
+        $labelNet.Text = $netLine
+        $labelNet.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+        $labelNet.ForeColor = [System.Drawing.Color]::FromArgb(200, 200, 200)
+        $labelNet.Location = New-Object System.Drawing.Point 15, $y
+        $labelNet.AutoSize = $true
+        $scrollNetwork.Controls.Add($labelNet)
+        $y += 35
+    }
+
+    $tabNetwork.Controls.Add($scrollNetwork)
+    $tabControl.TabPages.Add($tabNetwork)
+
+    # --- TAB 5: HAKKINDA ---
+    $tabAbout = New-Object Windows.Forms.TabPage
+    $tabAbout.Text = "Hakkinda"
+    $tabAbout.BackColor = $colorDarkBg
+
+    $scrollAbout = New-Object Windows.Forms.Panel
+    $scrollAbout.Dock = [Windows.Forms.DockStyle]::Fill
+    $scrollAbout.AutoScroll = $true
+    $scrollAbout.BackColor = $colorDarkBg
+    $scrollAbout.Padding = New-Object Windows.Forms.Padding(15)
+
+    $labelAboutTitle = New-Object Windows.Forms.Label
+    $labelAboutTitle.Text = "WinDeploy v6.1"
+    $labelAboutTitle.Font = New-Object System.Drawing.Font("Segoe UI", 20, [System.Drawing.FontStyle]::Bold)
+    $labelAboutTitle.ForeColor = $colorPrimary
+    $labelAboutTitle.Location = New-Object System.Drawing.Point 15, 15
+    $labelAboutTitle.AutoSize = $true
+    $scrollAbout.Controls.Add($labelAboutTitle)
+
+    $labelAboutDesc = New-Object Windows.Forms.Label
+    $labelAboutDesc.Text = "Windows Uygulama Yoneticisi`nv6.1 Edition"
+    $labelAboutDesc.Font = New-Object System.Drawing.Font("Segoe UI", 11)
+    $labelAboutDesc.ForeColor = [System.Drawing.Color]::FromArgb(180, 180, 180)
+    $labelAboutDesc.Location = New-Object System.Drawing.Point 15, 60
+    $labelAboutDesc.AutoSize = $true
+    $scrollAbout.Controls.Add($labelAboutDesc)
+
+    $y = 110
+    $features = @(
+        "120+ Pre-configured Applications"
+        "10 Application Categories"
+        "Real-time System Monitoring"
+        "Network Information"
+        "Performance Tracking"
+        "WinGet & Chocolatey Support"
+        "Import/Export Functionality"
+        "Beautiful Dark Theme"
+    )
+
+    foreach ($feature in $features) {
+        $labelFeature = New-Object Windows.Forms.Label
+        $labelFeature.Text = "* $feature"
+        $labelFeature.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+        $labelFeature.ForeColor = [System.Drawing.Color]::FromArgb(150, 200, 150)
+        $labelFeature.Location = New-Object System.Drawing.Point 15, $y
+        $labelFeature.AutoSize = $true
+        $scrollAbout.Controls.Add($labelFeature)
+        $y += 30
+    }
+
+    $tabAbout.Controls.Add($scrollAbout)
+    $tabControl.TabPages.Add($tabAbout)
 
     $form.Controls.Add($tabControl)
 

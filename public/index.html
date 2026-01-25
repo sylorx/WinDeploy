@@ -1,135 +1,126 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WinDeploy — Windows Uygulama Yöneticisi</title>
-  <link rel="stylesheet" href="/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinDeploy - Windows App Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-  <nav class="navbar">
-    <div class="container">
-      <h1 class="logo">WinDeploy</h1>
-      <ul class="nav-links">
-        <li><a href="#download">İndir</a></li>
-        <li><a href="#features">Özellikler</a></li>
-        <li><a href="#docs">Dokümantasyon</a></li>
-        <li><a href="https://github.com/sylorx/WinDeploy" target="_blank">GitHub</a></li>
-      </ul>
-    </div>
-  </nav>
+    <nav class="navbar">
+        <div class="container">
+            <h1>WinDeploy</h1>
+        </div>
+    </nav>
 
-  <header class="hero">
-    <div class="container">
-      <h2>Windows için Basit Uygulama Yükleyici</h2>
-      <p>WinGet ve Chocolatey ile bir tıkla 50+ uygulamayı yükleyin</p>
-      <button class="cta-button" onclick="copyCommand()">Komutu Kopyala</button>
-      <pre class="command" id="command">irm "https://windeploy.vercel.app/launcher.ps1" | iex</pre>
-    </div>
-  </header>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Windows App Manager</h2>
+                <p>Install <span class="app-count">120+</span> applications with one click</p>
 
-  <section id="features" class="features">
-    <div class="container">
-      <h3>Neden WinDeploy?</h3>
-      <div class="feature-grid">
-        <div class="feature-card">
-          <h4>⚡ Hızlı</h4>
-          <p>Arka planda sessiz kurulum. UI donmaz, işleminiz kesintisiz.</p>
-        </div>
-        <div class="feature-card">
-          <h4>📦 Çok Seçenek</h4>
-          <p>50+ uygulamadan seçin. Kategorilere ayrılmış, kolay erişim.</p>
-        </div>
-        <div class="feature-card">
-          <h4>🔄 Esnek</h4>
-          <p>WinGet ya da Chocolatey seçin. Otomatik fallback desteği.</p>
-        </div>
-        <div class="feature-card">
-          <h4>📋 İçe/Dışa Aktarma</h4>
-          <p>Seçimlerinizi JSON ile kaydedin ve başka bilgisayara taşıyın.</p>
-        </div>
-        <div class="feature-card">
-          <h4>🗂️ Kategorilendirme</h4>
-          <p>Tarayıcı, Multimedia, Geliştirme, Sistem, İletişim, Office...</p>
-        </div>
-        <div class="feature-card">
-          <h4>📊 Detaylı Günlük</h4>
-          <p>Tüm işlemlerin kaydı tutulur. Ne kuruldu, ne başarısız oldu?</p>
-        </div>
-      </div>
-    </div>
-  </section>
+                <h3 style="color: #b0b0b0; font-size: 1.1rem; margin: 2rem 0 1rem;">Quick Start</h3>
+                <div class="code-block">
+                    <code>irm "https://windeploy.vercel.app/launcher.ps1" | iex</code>
+                </div>
+                <p style="color: #707070; font-size: 0.9rem; margin-bottom: 2rem;">
+                    Run this command in PowerShell to launch WinDeploy
+                </p>
 
-  <section id="download" class="download">
-    <div class="container">
-      <h3>Başlangıç</h3>
-      <ol class="steps">
-        <li>
-          <strong>PowerShell'i Yönetici olarak açın</strong>
-          <p>Windows menüsünde "PowerShell" ara, sağ tık → Yönetici olarak aç</p>
-        </li>
-        <li>
-          <strong>Komutu çalıştırın</strong>
-          <pre><code>irm "https://windeploy.vercel.app/launcher.ps1" | iex</code></pre>
-        </li>
-        <li>
-          <strong>Uygulamaları seçin</strong>
-          <p>GUI açılacak. İstediğiniz uygulamaları seçip "Indir ve Yukle" düğmesine tıklayın.</p>
-        </li>
-        <li>
-          <strong>Bekleyin</strong>
-          <p>Kurulum arka planda yapılır. Progress bar izleyin.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
+                <div>
+                    <a href="https://github.com/sylorx/WinDeploy" class="cta-button">View on GitHub</a>
+                    <a href="#features" class="cta-button secondary">Learn More</a>
+                </div>
+            </div>
+        </section>
 
-  <section id="docs" class="docs">
-    <div class="container">
-      <h3>Teknik Bilgiler</h3>
-      <div class="docs-grid">
-        <div>
-          <h4>Paket Yöneticileri</h4>
-          <p><strong>WinGet:</strong> Microsoft'un resmi paket yöneticisi (Windows 11+, yüklenebilir)</p>
-          <p><strong>Chocolatey:</strong> Topluluk tarafından yönetilen paket yöneticisi (geniş paket havuzu)</p>
-        </div>
-        <div>
-          <h4>Desteklenen Uygulamalar</h4>
-          <ul>
-            <li>Tarayıcılar (Chrome, Firefox, Brave, Edge, Vivaldi...)</li>
-            <li>Multimedia (Spotify, VLC, OBS, Audacity, GIMP...)</li>
-            <li>Geliştirme (VSCode, Git, Python, Node.js, Docker...)</li>
-            <li>Sistem Araçları (PowerToys, 7-Zip, Notepad++, VirtualBox...)</li>
-            <li>İletişim (Discord, Slack, Zoom, Teams...)</li>
-            <li>Office (LibreOffice, OnlyOffice...)</li>
-            <li>Güvenlik (Malwarebytes, Bitwarden, KeePass...)</li>
-            <li>Oyunlar (Steam, Epic Games, GOG...)</li>
-          </ul>
-        </div>
-        <div>
-          <h4>Günlük Dosyası</h4>
-          <p>Konumu: <code>%APPDATA%\WinDeploy\WinDeploy_YYYY-MM-DD.log</code></p>
-          <p>Her kurulum denemesinin kaydı tutulur. Exit code'lar, hatalar, başarılar görülebilir.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+        <!-- Features Section -->
+        <section class="section container">
+            <h2 id="features">Features</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>📦 Package Managers</h3>
+                    <p>Support for both WinGet and Chocolatey with automatic fallback.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Fast Installation</h3>
+                    <p>Async background installation keeps your UI responsive.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 120+ Apps</h3>
+                    <p>Pre-configured across 10 categories: Browsers, Development, Multimedia, Open Source, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Smart Selection</h3>
+                    <p>Checkboxes and categories - install exactly what you need.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>�️ System Information</h3>
+                    <p>View PC info, OS details, RAM, and disk usage in real-time.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛠️ System Tools</h3>
+                    <p>One-click access to Windows utilities: Updates, Drivers, Firewall, Network, and more.</p>
+                </div>
+                    <p>Save your selections as JSON and reuse on other machines.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 Detailed Logging</h3>
+                    <p>Full logs saved to %APPDATA%\WinDeploy for troubleshooting.</p>
+                </div>
+            </div>
+        </section>
 
-  <footer>
-    <div class="container">
-      <p>© 2026 WinDeploy — <a href="https://github.com/sylorx/WinDeploy">GitHub</a> | <a href="https://github.com/sylorx/WinDeploy/issues">İssue Bildir</a></p>
-    </div>
-  </footer>
+        <!-- Getting Started -->
+        <section class="section container">
+            <h2>Getting Started</h2>
+            <h3 style="color: #0096d7; margin-top: 1.5rem; margin-bottom: 1rem;">Quick Launch (Recommended)</h3>
+            <p style="margin-bottom: 1rem;">Open PowerShell and run:</p>
+            <div class="code-block">
+                <code>irm "https://windeploy.vercel.app/launcher.ps1" | iex</code>
+            </div>
 
-  <script>
-    function copyCommand() {
-      const cmd = 'irm "https://windeploy.vercel.app/launcher.ps1" | iex';
-      navigator.clipboard.writeText(cmd).then(() => {
-        alert('Komut kopyalandı!');
-      }).catch(() => {
-        alert('Kopyalama başarısız. Manuel olarak kopyalayın.');
-      });
-    }
-  </script>
+            <h3 style="color: #0096d7; margin-top: 2rem; margin-bottom: 1rem;">Supported Categories (10)</h3>
+            <ul style="margin-left: 1rem; color: #a0a0a0; columns: 2;">
+                <li><strong>Browsers:</strong> Chrome, Firefox, Edge, Brave, Opera</li>
+                <li><strong>Multimedia:</strong> VLC, OBS, Audacity, FFmpeg</li>
+                <li><strong>Development:</strong> VS Code, Git, Node.js, Python, Docker</li>
+                <li><strong>System:</strong> 7-Zip, WinRAR, Everything, CCleaner</li>
+                <li><strong>Communication:</strong> Discord, Telegram, Slack</li>
+                <li><strong>Office:</strong> LibreOffice, Notepad++</li>
+                <li><strong>Security:</strong> Bitwarden, VPN tools</li>
+                <li><strong>Gaming:</strong> Steam, Epic Games, GOG</li>
+                <li><strong>Open Source:</strong> Blender, Krita, GIMP, Inkscape</li>
+                <li><strong>Extra Tools:</strong> ShareX, Rufus, DBeaver, WireShark</li>
+            </ul>
+        </section>
+
+        <!-- System Requirements -->
+        <section class="section container">
+            <h2>System Requirements</h2>
+            <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 4px; border-left: 3px solid #0096d7;">
+                <ul style="margin-left: 1rem; color: #a0a0a0;">
+                    <li>Windows 10/11</li>
+                    <li>PowerShell 5.1+</li>
+                    <li>Administrator privileges</li>
+                    <li>WinGet (Windows 10/11) or Chocolatey</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Documentation -->
+        <section class="section container">
+            <h2>Documentation</h2>
+            <p>Detailed documentation is available on <a href="https://github.com/sylorx/WinDeploy#readme" style="color: #0096d7;">GitHub</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 WinDeploy | <a href="https://github.com/sylorx/WinDeploy" target="_blank">GitHub</a> | Built with PowerShell & Web</p>
+        </div>
+    </footer>
 </body>
 </html>

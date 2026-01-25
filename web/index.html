@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinDeploy - Windows App Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1>WinDeploy</h1>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Windows App Manager</h2>
+                <p>Install <span class="app-count">120+</span> applications with one click</p>
+
+                <h3 style="color: #b0b0b0; font-size: 1.1rem; margin: 2rem 0 1rem;">Quick Start</h3>
+                <div class="code-block">
+                    <code>irm "https://windeploy.vercel.app/launcher.ps1" | iex</code>
+                </div>
+                <p style="color: #707070; font-size: 0.9rem; margin-bottom: 2rem;">
+                    Run this command in PowerShell to launch WinDeploy
+                </p>
+
+                <div>
+                    <a href="https://github.com/sylorx/WinDeploy" class="cta-button">View on GitHub</a>
+                    <a href="#features" class="cta-button secondary">Learn More</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section container">
+            <h2 id="features">Features</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>📦 Package Managers</h3>
+                    <p>Support for both WinGet and Chocolatey with automatic fallback.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Fast Installation</h3>
+                    <p>Async background installation keeps your UI responsive.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 120+ Apps</h3>
+                    <p>Pre-configured across 10 categories: Browsers, Development, Multimedia, Open Source, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Smart Selection</h3>
+                    <p>Checkboxes and categories - install exactly what you need.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>�️ System Information</h3>
+                    <p>View PC info, OS details, RAM, and disk usage in real-time.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛠️ System Tools</h3>
+                    <p>One-click access to Windows utilities: Updates, Drivers, Firewall, Network, and more.</p>
+                </div>
+                    <p>Save your selections as JSON and reuse on other machines.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📋 Detailed Logging</h3>
+                    <p>Full logs saved to %APPDATA%\WinDeploy for troubleshooting.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Started -->
+        <section class="section container">
+            <h2>Getting Started</h2>
+            <h3 style="color: #0096d7; margin-top: 1.5rem; margin-bottom: 1rem;">Quick Launch (Recommended)</h3>
+            <p style="margin-bottom: 1rem;">Open PowerShell and run:</p>
+            <div class="code-block">
+                <code>irm "https://windeploy.vercel.app/launcher.ps1" | iex</code>
+            </div>
+
+            <h3 style="color: #0096d7; margin-top: 2rem; margin-bottom: 1rem;">Supported Categories (10)</h3>
+            <ul style="margin-left: 1rem; color: #a0a0a0; columns: 2;">
+                <li><strong>Browsers:</strong> Chrome, Firefox, Edge, Brave, Opera</li>
+                <li><strong>Multimedia:</strong> VLC, OBS, Audacity, FFmpeg</li>
+                <li><strong>Development:</strong> VS Code, Git, Node.js, Python, Docker</li>
+                <li><strong>System:</strong> 7-Zip, WinRAR, Everything, CCleaner</li>
+                <li><strong>Communication:</strong> Discord, Telegram, Slack</li>
+                <li><strong>Office:</strong> LibreOffice, Notepad++</li>
+                <li><strong>Security:</strong> Bitwarden, VPN tools</li>
+                <li><strong>Gaming:</strong> Steam, Epic Games, GOG</li>
+                <li><strong>Open Source:</strong> Blender, Krita, GIMP, Inkscape</li>
+                <li><strong>Extra Tools:</strong> ShareX, Rufus, DBeaver, WireShark</li>
+            </ul>
+        </section>
+
+        <!-- System Requirements -->
+        <section class="section container">
+            <h2>System Requirements</h2>
+            <div style="background: #1a1a1a; padding: 1.5rem; border-radius: 4px; border-left: 3px solid #0096d7;">
+                <ul style="margin-left: 1rem; color: #a0a0a0;">
+                    <li>Windows 10/11</li>
+                    <li>PowerShell 5.1+</li>
+                    <li>Administrator privileges</li>
+                    <li>WinGet (Windows 10/11) or Chocolatey</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Documentation -->
+        <section class="section container">
+            <h2>Documentation</h2>
+            <p>Detailed documentation is available on <a href="https://github.com/sylorx/WinDeploy#readme" style="color: #0096d7;">GitHub</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 WinDeploy | <a href="https://github.com/sylorx/WinDeploy" target="_blank">GitHub</a> | Built with PowerShell & Web</p>
+        </div>
+    </footer>
+</body>
+</html>

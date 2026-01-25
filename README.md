@@ -90,9 +90,16 @@ Uygulama listelerinizi:
 - 🔄 Paylaşın - Arkadaşlarınızla konfigürasyonlarınızı paylaşın
 
 ### 🛠️ Sistem Araçları
-- 💻 Sistem bilgisi görüntüleme
-- 📊 Disk ve RAM kullanımı
-- 🔧 Sistem kontrol paneli (gelecek versiyonlar)
+- **Sistem Bilgisi:** Bilgisayar adı, İşletim Sistemi, Versiyon, Mimarisi, RAM, Disk kullanımı
+- **Sistem Yönetimi:**
+  - 🚀 Sistem Optimizasyonu
+  - 📥 Windows Güncellemesi
+  - ⚡ Tek Tuşla Güncelleme
+  - 🖥️ Sürücü Yönetimi
+  - 🧹 Sistem Temizleme
+  - ⚙️ Başlangıç Programları Yönetimi
+  - 🌐 Network Ayarları
+  - 🔥 Firewall Yönetimi
 
 ---
 

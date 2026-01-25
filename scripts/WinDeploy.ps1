@@ -299,6 +299,50 @@ try {
         }
     }
 
+    # === SISTEM SAGLIK FONKSIYONU ===
+    function Get-SystemHealth {
+        $health = @()
+        
+        # Windows Update kontrolü
+        $updateStatus = (Get-HotFix | Measure-Object).Count
+        if ($updateStatus -gt 0) {
+            $health += "OK: $updateStatus guncelleme kurulu"
+        } else {
+            $health += "UYARI: Guncelleme bulunamadi"
+        }
+        
+        # Disk durumu
+        $disk = Get-Volume | Where-Object {$_.DriveLetter -eq 'C'}
+        $diskPercent = [Math]::Round((($disk.Size - $disk.SizeRemaining) / $disk.Size) * 100, 1)
+        if ($diskPercent -gt 90) {
+            $health += "UYARI: Disk %$diskPercent dolu - Hemen temizle!"
+        } elseif ($diskPercent -gt 75) {
+            $health += "DIKKAT: Disk %$diskPercent dolu"
+        } else {
+            $health += "OK: Disk Kullanimi Iyi ($diskPercent%)"
+        }
+        
+        # RAM kontrolü
+        $os = Get-CimInstance Win32_OperatingSystem
+        $memPercent = [Math]::Round((($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / $os.TotalVisibleMemorySize) * 100, 1)
+        if ($memPercent -gt 85) {
+            $health += "UYARI: RAM %$memPercent kullanimda"
+        } else {
+            $health += "OK: RAM Kullanimı Normal (%$memPercent)"
+        }
+        
+        # Temp dosyalar
+        $tempSize = (Get-ChildItem -Path $env:TEMP -Recurse -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
+        $tempMB = [Math]::Round($tempSize / 1024 / 1024, 2)
+        if ($tempMB -gt 500) {
+            $health += "UYARI: Temp dosyalari $tempMB MB - Temizlenmesi oneriliwor"
+        } else {
+            $health += "OK: Temp dosyalari OK ($tempMB MB)"
+        }
+        
+        return $health
+    }
+
     # === PERFORANS BILGILERI FONKSIYONU ===
     function Get-PerformanceInfo {
         $os = Get-CimInstance Win32_OperatingSystem
@@ -377,6 +421,34 @@ try {
         Write-Log "Paket Yoneticisi: $selectedManager"
     })
     $panelHeader.Controls.Add($comboManager)
+
+    $labelSearch = New-Object Windows.Forms.Label
+    $labelSearch.Text = "Ara:"
+    $labelSearch.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $labelSearch.ForeColor = [System.Drawing.Color]::White
+    $labelSearch.Location = New-Object System.Drawing.Point(780, 15)
+    $labelSearch.AutoSize = $true
+    $panelHeader.Controls.Add($labelSearch)
+
+    $textSearch = New-Object Windows.Forms.TextBox
+    $textSearch.Location = New-Object System.Drawing.Point(780, 38)
+    $textSearch.Width = 200
+    $textSearch.BackColor = [System.Drawing.Color]::FromArgb(60, 60, 60)
+    $textSearch.ForeColor = [System.Drawing.Color]::White
+    $textSearch.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $textSearch.PlaceholderText = "Uygulama ara..."
+    
+    $textSearch.Add_TextChanged({
+        $searchTerm = $textSearch.Text.ToLower()
+        foreach ($cb in $checkboxes.Values) {
+            if ($searchTerm -eq "") {
+                $cb.Checkbox.Visible = $true
+            } else {
+                $cb.Checkbox.Visible = $cb.Checkbox.Text.ToLower().Contains($searchTerm)
+            }
+        }
+    })
+    $panelHeader.Controls.Add($textSearch)
     $form.Controls.Add($panelHeader)
 
     # === TAB CONTROL ===
@@ -741,6 +813,59 @@ try {
 
     $tabAbout.Controls.Add($scrollAbout)
     $tabControl.TabPages.Add($tabAbout)
+
+    # --- TAB 6: SISTEM SAGLIGI ---
+    $tabHealth = New-Object Windows.Forms.TabPage
+    $tabHealth.Text = "Saglik Durumu"
+    $tabHealth.BackColor = $colorDarkBg
+
+    $scrollHealth = New-Object Windows.Forms.Panel
+    $scrollHealth.Dock = [Windows.Forms.DockStyle]::Fill
+    $scrollHealth.AutoScroll = $true
+    $scrollHealth.BackColor = $colorDarkBg
+    $scrollHealth.Padding = New-Object Windows.Forms.Padding(15)
+
+    $healthReport = Get-SystemHealth
+
+    $labelHealthTitle = New-Object Windows.Forms.Label
+    $labelHealthTitle.Text = "Sistem Saglik Raporu"
+    $labelHealthTitle.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+    $labelHealthTitle.ForeColor = $colorPrimary
+    $labelHealthTitle.Location = New-Object System.Drawing.Point 15, 15
+    $labelHealthTitle.AutoSize = $true
+    $scrollHealth.Controls.Add($labelHealthTitle)
+
+    $y = 60
+    foreach ($status in $healthReport) {
+        $labelHealth = New-Object Windows.Forms.Label
+        $labelHealth.Text = $status
+        $labelHealth.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+        
+        if ($status -match "UYARI") {
+            $labelHealth.ForeColor = [System.Drawing.Color]::FromArgb(255, 150, 0)
+        } elseif ($status -match "DIKKAT") {
+            $labelHealth.ForeColor = [System.Drawing.Color]::FromArgb(255, 200, 0)
+        } else {
+            $labelHealth.ForeColor = [System.Drawing.Color]::FromArgb(150, 200, 150)
+        }
+        
+        $labelHealth.Location = New-Object System.Drawing.Point 15, $y
+        $labelHealth.AutoSize = $true
+        $labelHealth.MaximumSize = New-Object System.Drawing.Size(600, 0)
+        $scrollHealth.Controls.Add($labelHealth)
+        $y += 50
+    }
+
+    $labelRefresh = New-Object Windows.Forms.Label
+    $labelRefresh.Text = "Sayfa yenilenme: Her sekme degisiminde"
+    $labelRefresh.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+    $labelRefresh.ForeColor = [System.Drawing.Color]::FromArgb(100, 100, 100)
+    $labelRefresh.Location = New-Object System.Drawing.Point 15, ($y + 30)
+    $labelRefresh.AutoSize = $true
+    $scrollHealth.Controls.Add($labelRefresh)
+
+    $tabHealth.Controls.Add($scrollHealth)
+    $tabControl.TabPages.Add($tabHealth)
 
     $form.Controls.Add($tabControl)
 
